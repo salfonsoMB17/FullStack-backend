@@ -62,9 +62,13 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  persons = persons.filter(p => p.id !== Number(req.params.id))
-  res.status(204).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+  //console.log('rq:', req.params.id)
+  Person.findByIdAndDelete(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res) => {
