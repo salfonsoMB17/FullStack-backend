@@ -71,7 +71,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const { name, number } = req.body
 
   if (!name) return res.status(400).json({ error: 'name missing' })
@@ -85,8 +85,21 @@ app.post('/api/persons', (req, res) => {
   person.save().then(savedPerson => {
     //console.log(`${savedPerson.name} saved to database`)
     res.json(savedPerson)
-  })
+  })  
+  .catch(error => next(error))
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
