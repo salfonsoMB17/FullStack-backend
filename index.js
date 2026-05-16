@@ -40,7 +40,7 @@ let persons = [
 
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(result => {
-    //console.log(result)
+    console.log(result)
     response.json(result)
   })
   //response.json(persons)
@@ -87,6 +87,21 @@ app.post('/api/persons', (req, res, next) => {
     res.json(savedPerson)
   })  
   .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const { name, number } = req.body
+
+  const person = {
+    name: name,
+    number: number,
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 const errorHandler = (error, request, response, next) => {
